@@ -30,11 +30,11 @@ void setup() {
 
 void loop() {
   int windSenVal = analogRead(analogInPin);
-  int adjWindVal = winSenval - 450;
+  int adjWindVal = winSenVal - 450;
   if (adjWindVal < 0) { adjWindVal = 0; }
   adjWindVal *= 5.5;
   if (adjWindVal > 1000) { adjWindVal = 1000; }
-  fanVal = (adjWindVal / 58) + 108;
+  int fanVal = (adjWindVal / 58) + 108;
   if (fanVal > 123) { fanVal = 123; }
   if (adjWindVal > 125) {
     analogWrite(motorPin, fanVal);
