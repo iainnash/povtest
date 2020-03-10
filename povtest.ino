@@ -1,3 +1,5 @@
+#define SIMULATE_POV
+
 #include "TeensyPovDisplay.h"
 
 #define NUM_LEDS 36
