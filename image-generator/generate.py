@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import cv2
+import struct
 import os
 import math
 from PIL import Image
@@ -12,8 +13,10 @@ Led0Bright = 100 #Brightness of center LED [%]
 file = open('graphics.h', 'w')
 file.write('#define NUMPIXELS ' + str(NUMPIXELS) + '\n')
 file.write('#define Div ' + str(Div) + '\n' + '\n')
+# first 3 shorts; frame/numpixels/div. can be used for verifiation
 #file.write('#define Frame ' + str(Frame) + '\n' + '\n')
 file.write('const uint32_t pic [Frame][Div][NUMPIXELS] = {' + '\n')
+lnn = []
 # Read GIF file
 gif_file_name = "pic.gif"
 gif = cv2.VideoCapture(gif_file_name)
@@ -50,6 +53,7 @@ def polarConv(pic, i):
            bP = int(imgRedu[int(hC + math.ceil(i * math.cos(2*math.pi/Div*j))),
                         int(wC - math.ceil(i * math.sin(2*math.pi/Div*j))), 0]
                     * ((100 - Led0Bright) / NUMPIXELS * i + Led0Bright) / 100 * Bright /100)
+           lnn.append(struct.pack('hhh', rP, gP, bP))
            file.write('0x%02X%02X%02X' % (rP,gP,bP))
            if i == hC:
                file.write('},\n')
@@ -80,5 +84,9 @@ file.close()
 with open('graphics.h') as f:
    l = f.readlines()
 l.insert(0, '#define Frame ' + str(i) + '\n')
+f2 = open('graphic-bin0.bin', 'wb')
+f2.write(struct.pack('hhh', i, NUMPIXELS, Div));
+for nr in lnn:
+   f2.write(nr)
 with open('graphics.h', mode='w') as f:
    f.writelines(l)
